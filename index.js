@@ -1,4 +1,15 @@
 $(function() {
+
+	// Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAfyhyO0em2wsG5jHXgXDtRceI-2f_1T0o",
+    authDomain: "retacapp-168903.firebaseapp.com",
+    databaseURL: "https://retacapp-168903.firebaseio.com",
+    projectId: "retacapp-168903",
+    storageBucket: "retacapp-168903.appspot.com",
+    messagingSenderId: "1039891133697"
+  };
+  firebase.initializeApp(config);
     
     var $formLogin = $('#login-form');
     var $formLost = $('#lost-form');
@@ -13,6 +24,28 @@ $(function() {
     const login_password = document.getElementById('login_password');
     const checkboxLogin = document.getElementById('checkboxLogin');
 
+    btnLogin.addEventListener('click', e=>{
+    	const user_name = login_username.value;
+        const password = login_password.value;
+        const checkBoxLog = checkboxLogin.value;
+        const auth = firebase.auth();
+
+        const promise = auth.signInWithEmailAndPassword(user_name, password);
+
+        promise
+        	.then(user => window.location.href = "s_admin_interface.html")
+        	.catch(e => msgChange($('#div-login-msg'), $('#icon-login-msg'), $('#text-login-msg'), "error", "glyphicon-remove", e.message));
+
+    });
+
+    firebase.auth().onAuthStateChanged(firebaseUser => {
+    	if(firebaseUser){
+    		window.location.href = "s_admin_interface.html";
+    	}else{
+    		window.alert("no está logueado");
+    	}
+    });
+
 
     $("form").submit(function () {
         switch(this.id) {
@@ -25,28 +58,33 @@ $(function() {
 
                     const user_name = login_username.value;
                     const password = login_password.value;
-                    const checkBoxLog = checkboxLogin.value;
-                    
+                    const checkBoxLog = checkboxLogin.value;                    
 
-                    firebase.auth().onAuthStateChanged(function (user_name) {
-                        if(user_name){
-                        	var dialog = document.querySelector('#homePage');
-                        	dialog.show();
-                        }else{
-                            window.alert("no logueado");
-                        }
-                    });
-                    //get email and login_password
-
-                    firebase.auth().signInWithEmailAndPassword(user_name, password).catch(function(error) {
+                    //get email and password
+                    /*var user = firebase.auth().signInWithEmailAndPassword(user_name, password).catch(function(error) {
                         // Handle Errors here.
-
                         var errorCode = error.code;
                         var errorMessage = error.message;
-                        
-                        msgChange($('#div-login-msg'), $('#icon-login-msg'), $('#text-login-msg'), "error", "glyphicon-remove", errorMessage);
-                        
-                    });
+                        // ...
+                        if (errorCode == "auth/wrong-password" ){
+                        	window.alert(errorMessage)
+                            msgChange($('#div-login-msg'), $('#icon-login-msg'), $('#text-login-msg'), "error", "glyphicon-remove", errorMessage);
+                        }else if (errorCode == "auth/invalid-email"){
+                            msgChange($('#div-login-msg'), $('#icon-login-msg'), $('#text-login-msg'), "error", "glyphicon-remove", errorMessage);
+                        }else if (errorCode == "auth/network-request-failed"){
+                        	window.alert(errorMessage)
+                            msgChange($('#div-login-msg'), $('#icon-login-msg'), $('#text-login-msg'), "error", "glyphicon-remove", errorMessage);
+                        }
+                    });*/
+                    
+
+                    /*firebase.auth().onAuthStateChanged(function (user) {
+                        if(user){
+                        	window.location.href = "s_admin_interface.html";
+                        }else{
+                            window.alert("no logueado")
+                        }
+                    });*/
                 }
                 return false;
                 break;
